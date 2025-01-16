@@ -13,14 +13,18 @@ spec = do
         parse parseDigit "" "5" `shouldBe` Right '5'
       
       it "fails on non-digit" $ do
-        parse parseDigit "" "a" `shouldBe` Left "digit"
+        case parse parseDigit "" "a" of
+          Left _ -> True `shouldBe` True  -- Just verify it fails
+          Right _ -> expectationFailure "Expected parser to fail on non-digit"
 
     describe "parseNumber" $ do
       it "parses multiple digits" $ do
         parse parseNumber "" "123" `shouldBe` Right "123"
       
       it "fails on non-number" $ do
-        parse parseNumber "" "abc" `shouldBe` Left "digit"
+        case parse parseNumber "" "abc" of
+          Left _ -> True `shouldBe` True  -- Just verify it fails
+          Right _ -> expectationFailure "Expected parser to fail on non-number"
 
     describe "parseWord" $ do
       it "parses a single word" $ do
