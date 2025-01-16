@@ -1,0 +1,190 @@
+-- src/Tutorial/BasicParsers.hs
+module Tutorial.BasicParsers
+    ( parseDigit
+    , parseNumber
+    , parseWord
+    , parseSentence
+    , parseCSV
+    ) where
+
+import Text.Parsec
+import Text.Parsec.String (Parser)
+
+-- Exercise 1: Parse a single digit
+-- Hint: Use 'digit' from Parsec
+parseDigit :: Parser Char
+parseDigit = undefined
+
+-- Exercise 2: Parse a number (multiple digits)
+-- Hint: Use 'many1' with parseDigit
+parseNumber :: Parser String
+parseNumber = undefined
+
+-- Exercise 3: Parse a word (sequence of letters)
+-- Hint: Use 'letter' and 'many1'
+parseWord :: Parser String
+parseWord = undefined
+
+-- Exercise 4: Parse a sentence (sequence of words separated by spaces)
+-- Hint: Use 'parseWord' and 'spaces'
+parseSentence :: Parser [String]
+parseSentence = undefined
+
+-- Exercise 5: Parse CSV (comma-separated values)
+-- Each line should contain words separated by commas
+-- Hint: Use 'parseWord', 'char' for comma, and 'sepBy'
+parseCSV :: Parser [[String]]
+parseCSV = undefined
+
+-- src/Tutorial/Calculator.hs
+module Tutorial.Calculator
+    ( Expr(..)
+    , parseExpr
+    ) where
+
+import Text.Parsec
+import Text.Parsec.String (Parser)
+
+data Expr = Number Int
+         | Add Expr Expr
+         | Sub Expr Expr
+         | Mul Expr Expr
+         | Div Expr Expr
+         deriving (Show, Eq)
+
+-- Exercise 6: Parse a simple calculator expression
+-- Should handle basic arithmetic (+, -, *, /) with proper precedence
+-- Hint: Use chainl1 for operator precedence
+parseExpr :: Parser Expr
+parseExpr = undefined
+
+-- src/Tutorial/JSON.hs
+module Tutorial.JSON
+    ( JSONValue(..)
+    , parseJSON
+    ) where
+
+import Text.Parsec
+import Text.Parsec.String (Parser)
+import qualified Data.Map as Map
+
+data JSONValue = JNull
+               | JBool Bool
+               | JNumber Double
+               | JString String
+               | JArray [JSONValue]
+               | JObject (Map.Map String JSONValue)
+               deriving (Show, Eq)
+
+-- Exercise 7: Parse JSON
+-- Should handle null, booleans, numbers, strings, arrays, and objects
+-- Hint: Use recursive parsers for nested structures
+parseJSON :: Parser JSONValue
+parseJSON = undefined
+
+-- test/BasicParsersSpec.hs
+module BasicParsersSpec (spec) where
+
+import Test.Hspec
+import Text.Parsec (parse)
+import Tutorial.BasicParsers
+
+spec :: Spec
+spec = do
+  describe "Basic Parsers" $ do
+    describe "parseDigit" $ do
+      it "parses a single digit" $ do
+        parse parseDigit "" "5" `shouldBe` Right '5'
+      
+      it "fails on non-digit" $ do
+        case parse parseDigit "" "a" of
+          Left err -> show err `shouldContain` "digit"
+          Right _ -> expectationFailure "Should have failed"
+
+    describe "parseNumber" $ do
+      it "parses multiple digits" $ do
+        parse parseNumber "" "123" `shouldBe` Right "123"
+      
+      it "fails on non-number" $ do
+        case parse parseNumber "" "abc" of
+          Left err -> show err `shouldContain` "digit"
+          Right _ -> expectationFailure "Should have failed"
+
+    describe "parseWord" $ do
+      it "parses a single word" $ do
+        parse parseWord "" "hello" `shouldBe` Right "hello"
+      
+      it "stops at space" $ do
+        parse parseWord "" "hello world" `shouldBe` Right "hello"
+
+    describe "parseSentence" $ do
+      it "parses multiple words" $ do
+        parse parseSentence "" "hello world" `shouldBe` Right ["hello", "world"]
+      
+      it "handles multiple spaces" $ do
+        parse parseSentence "" "hello   world" `shouldBe` Right ["hello", "world"]
+
+    describe "parseCSV" $ do
+      it "parses single line CSV" $ do
+        parse parseCSV "" "hello,world" `shouldBe` Right [["hello", "world"]]
+      
+      it "parses multiple lines" $ do
+        parse parseCSV "" "a,b,c\nd,e,f" `shouldBe` Right [["a","b","c"], ["d","e","f"]]
+
+-- test/CalculatorSpec.hs
+module CalculatorSpec (spec) where
+
+import Test.Hspec
+import Text.Parsec (parse)
+import Tutorial.Calculator
+
+spec :: Spec
+spec = do
+  describe "Calculator Parser" $ do
+    it "parses simple number" $ do
+      parse parseExpr "" "123" `shouldBe` Right (Number 123)
+    
+    it "parses addition" $ do
+      parse parseExpr "" "1 + 2" `shouldBe` Right (Add (Number 1) (Number 2))
+    
+    it "parses multiplication with precedence" $ do
+      parse parseExpr "" "1 + 2 * 3" `shouldBe` 
+        Right (Add (Number 1) (Mul (Number 2) (Number 3)))
+
+-- test/JSONSpec.hs
+module JSONSpec (spec) where
+
+import Test.Hspec
+import Text.Parsec (parse)
+import Tutorial.JSON
+import qualified Data.Map as Map
+
+spec :: Spec
+spec = do
+  describe "JSON Parser" $ do
+    it "parses null" $ do
+      parse parseJSON "" "null" `shouldBe` Right JNull
+    
+    it "parses boolean" $ do
+      parse parseJSON "" "true" `shouldBe` Right (JBool True)
+      parse parseJSON "" "false" `shouldBe` Right (JBool False)
+    
+    it "parses number" $ do
+      parse parseJSON "" "123.45" `shouldBe` Right (JNumber 123.45)
+    
+    it "parses string" $ do
+      parse parseJSON "" "\"hello\"" `shouldBe` Right (JString "hello")
+    
+    it "parses array" $ do
+      parse parseJSON "" "[1, 2, 3]" `shouldBe` 
+        Right (JArray [JNumber 1, JNumber 2, JNumber 3])
+    
+    it "parses object" $ do
+      parse parseJSON "" "{\"name\": \"John\", \"age\": 30}" `shouldBe`
+        Right (JObject $ Map.fromList [
+          ("name", JString "John"),
+          ("age", JNumber 30)
+        ])
+
+-- test/Spec.hs
+{-# OPTIONS_GHC -F -pgmF hspec-discover #-}
