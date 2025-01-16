@@ -1,5 +1,5 @@
 -- test/Tutorial/CalculatorSpec.hs
-module Tutorial.CalculatorSpec (spec) where
+module CalculatorSpec (spec) where
 
 import Test.Hspec
 import Text.Parsec (parse)

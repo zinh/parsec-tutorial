@@ -1,5 +1,5 @@
 -- test/Tutorial/JSONSpec.hs
-module Tutorial.JSONSpec (spec) where
+module JSONSpec (spec) where
 
 import Test.Hspec
 import Text.Parsec (parse)

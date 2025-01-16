@@ -1,5 +1,5 @@
 -- test/Tutorial/BasicParsersSpec.hs
-module Tutorial.BasicParsersSpec (spec) where
+module BasicParsersSpec (spec) where
 
 import Test.Hspec
 import Text.Parsec (parse)
