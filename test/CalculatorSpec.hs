@@ -1,4 +1,3 @@
--- test/Tutorial/CalculatorSpec.hs
 module CalculatorSpec (spec) where
 
 import Test.Hspec

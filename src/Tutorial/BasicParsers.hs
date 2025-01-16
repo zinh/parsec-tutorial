@@ -1,4 +1,3 @@
--- src/Tutorial/BasicParsers.hs
 module Tutorial.BasicParsers
     ( parseDigit
     , parseNumber

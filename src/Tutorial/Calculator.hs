@@ -1,4 +1,3 @@
--- src/Tutorial/Calculator.hs
 module Tutorial.Calculator
     ( Expr(..)
     , parseExpr

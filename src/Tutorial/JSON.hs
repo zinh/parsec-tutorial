@@ -1,4 +1,3 @@
--- src/Tutorial/JSON.hs
 module Tutorial.JSON
     ( JSONValue(..)
     , parseJSON
